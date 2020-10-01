@@ -42,6 +42,8 @@ public class Xtractor<E extends Bean> {
   private HashMap<String, Cast> castMap;
   private int[] preparedParameterValueTypes;
 
+  private static final LinkedHashMap<Class<?>, Object> instanceMap = new LinkedHashMap<>();
+
   /**
    * @param connection {@link ConnectionType}
    * @param query      query, if it doesn't have any params
@@ -87,6 +89,24 @@ public class Xtractor<E extends Bean> {
   }
 
   /**
+   * give class instance if it's avaiable in cache
+   *
+   * @param className class name
+   * @return instance of E
+   */
+  private E getClassInstance(Class<E> className) {
+    //noinspection unchecked
+    return (E) instanceMap.computeIfAbsent(className, aClass -> {
+      try {
+        return aClass.newInstance();
+      } catch (InstantiationException | IllegalAccessException e) {
+        //damn
+      }
+      return null;
+    });
+  }
+
+  /**
    * break it in parts
    *
    * @param className class that implements {@link Bean}
@@ -109,7 +129,7 @@ public class Xtractor<E extends Bean> {
       resultSet = statement.executeQuery();
       resultSetMetaData = resultSet.getMetaData();
       while (resultSet.next()) {
-        classInstance = className.newInstance();
+        classInstance = getClassInstance(className);
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
           String colName = resultSetMetaData.getColumnLabel(i).toLowerCase();
           if (hashMap.containsKey(colName)) {
