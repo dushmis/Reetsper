@@ -52,7 +52,6 @@ public class Xtractor<E extends Bean> {
     this.connectionType = connection;
     this.query = query;
     this.preparedParameters = null;
-    this.castMap = null;
     this.preparedParameterValues = null;
     this.preparedParameterValueTypes = null;
   }
@@ -94,9 +93,9 @@ public class Xtractor<E extends Bean> {
    * @param className class name
    * @return instance of E
    */
-  private E getClassInstance(Class<E> className) {
+  private Optional<E> getClassInstance(Class<E> className) {
     //noinspection unchecked
-    return (E) instanceMap.computeIfAbsent(className, aClass -> {
+    final E e1 = (E) instanceMap.computeIfAbsent(className, aClass -> {
       try {
         return aClass.newInstance();
       } catch (InstantiationException | IllegalAccessException e) {
@@ -104,6 +103,7 @@ public class Xtractor<E extends Bean> {
       }
       return null;
     });
+    return Optional.ofNullable(e1);
   }
 
   /**
@@ -129,7 +129,11 @@ public class Xtractor<E extends Bean> {
       resultSet = statement.executeQuery();
       resultSetMetaData = resultSet.getMetaData();
       while (resultSet.next()) {
-        classInstance = getClassInstance(className);
+        final Optional<E> classInstance1 = getClassInstance(className);
+        if (!classInstance1.isPresent()) {
+          continue;
+        }
+        classInstance = classInstance1.get();
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
           String colName = resultSetMetaData.getColumnLabel(i).toLowerCase();
           if (hashMap.containsKey(colName)) {

@@ -4,12 +4,14 @@ package org.reetsper.reflect;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Yes!! i am aware that it doesn't throw any exception in case method is not found, that's the idea
  *
  * @param <E>
  */
+@SuppressWarnings({"unused", "RedundantSuppression"})
 public final class Funcs<E> {
   public static final Object[] EMPTY_OBJECTS = new Object[]{};
   public static final Class<?>[] EMPTY_CLASSES = new Class<?>[]{};
@@ -31,7 +33,7 @@ public final class Funcs<E> {
    * @param returnClass
    * @return
    */
-  public static <E> E execute(Object object, String method, Class<? extends E> returnClass) {
+  public static <E> Optional<E> execute(Object object, String method, Class<? extends E> returnClass) {
     return executeIfMethodExists(object, method, EMPTY_OBJECTS, EMPTY_CLASSES, returnClass);
   }
 
@@ -42,10 +44,8 @@ public final class Funcs<E> {
    * @param parameterType
    * @return
    */
-  public static Object execute(Object object, String method, Object parameterObject,
-                               Class<?> parameterType) {
-    return executeIfMethodExists(object, method, new Object[]{parameterObject},
-            new Class<?>[]{parameterType}, DEFAULT_RETURN_TYPE);
+  public static Object execute(Object object, String method, Object parameterObject, Class<?> parameterType) {
+    return executeIfMethodExists(object, method, new Object[]{parameterObject}, new Class<?>[]{parameterType}, DEFAULT_RETURN_TYPE);
   }
 
   /**
@@ -56,10 +56,8 @@ public final class Funcs<E> {
    * @param returnClass
    * @return
    */
-  public static <E> E execute(Object object, String method, Object parameterObject,
-                              Class<?> parameterType, Class<? extends E> returnClass) {
-    return executeIfMethodExists(object, method, new Object[]{parameterObject},
-            new Class<?>[]{parameterType}, returnClass);
+  public static <E> Optional<E> execute(Object object, String method, Object parameterObject, Class<?> parameterType, Class<? extends E> returnClass) {
+    return executeIfMethodExists(object, method, new Object[]{parameterObject}, new Class<?>[]{parameterType}, returnClass);
   }
 
   /**
@@ -69,10 +67,8 @@ public final class Funcs<E> {
    * @param parameterTypes
    * @return
    */
-  public static Object execute(Object object, String method, Object parameterObject,
-                               Class<?>[] parameterTypes) {
-    return executeIfMethodExists(object, method, new Object[]{parameterObject}, parameterTypes,
-            DEFAULT_RETURN_TYPE);
+  public static Object execute(Object object, String method, Object parameterObject, Class<?>[] parameterTypes) {
+    return executeIfMethodExists(object, method, new Object[]{parameterObject}, parameterTypes, DEFAULT_RETURN_TYPE);
   }
 
   /**
@@ -83,10 +79,8 @@ public final class Funcs<E> {
    * @param returnClass
    * @return
    */
-  public static <E> E execute(Object object, String method, Object parameterObject,
-                              Class<?>[] parameterTypes, Class<? extends E> returnClass) {
-    return executeIfMethodExists(object, method, new Object[]{parameterObject}, parameterTypes,
-            returnClass);
+  public static <E> Optional<E> execute(Object object, String method, Object parameterObject, Class<?>[] parameterTypes, Class<? extends E> returnClass) {
+    return executeIfMethodExists(object, method, new Object[]{parameterObject}, parameterTypes, returnClass);
   }
 
 
@@ -111,10 +105,8 @@ public final class Funcs<E> {
    * @param returnClass
    * @return
    */
-  public static <E> E execute(Object object, String method, Object[] parameterObjects,
-                              Class<?> parameterType, Class<? extends E> returnClass) {
-    return executeIfMethodExists(object, method, parameterObjects, new Class<?>[]{parameterType},
-            returnClass);
+  public static <E> Optional<E> execute(Object object, String method, Object[] parameterObjects, Class<?> parameterType, Class<? extends E> returnClass) {
+    return executeIfMethodExists(object, method, parameterObjects, new Class<?>[]{parameterType}, returnClass);
   }
 
   /**
@@ -138,8 +130,7 @@ public final class Funcs<E> {
    * @param returnClass
    * @return
    */
-  public static <E> E execute(Object object, String method, Object[] parameterObjects,
-                              Class<?>[] parameterTypes, Class<? extends E> returnClass) {
+  public static <E> Optional<E> execute(Object object, String method, Object[] parameterObjects, Class<?>[] parameterTypes, Class<? extends E> returnClass) {
     return executeIfMethodExists(object, method, parameterObjects, parameterTypes, returnClass);
   }
 
@@ -156,12 +147,10 @@ public final class Funcs<E> {
    * @throws IllegalArgumentException
    * @throws InvocationTargetException
    */
-  public static <E> E execute0(Object object, String method, Object[] parameterObjects,
-                               Class<?> parameterType, Class<? extends E> returnClass)
+  public static <E> E execute0(Object object, String method, Object[] parameterObjects, Class<?> parameterType, Class<? extends E> returnClass)
           throws NoSuchMethodException, SecurityException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException {
-    return executeIfMethodExists0(object, method, parameterObjects, new Class<?>[]{parameterType},
-            returnClass);
+    return executeIfMethodExists0(object, method, parameterObjects, new Class<?>[]{parameterType}, returnClass);
   }
 
   /**
@@ -177,10 +166,8 @@ public final class Funcs<E> {
    * @throws IllegalArgumentException
    * @throws InvocationTargetException
    */
-  public static <E> E execute0(Object object, String method, Object[] parameterObjects,
-                               Class<?>[] parameterTypes, Class<? extends E> returnClass)
-          throws NoSuchMethodException, SecurityException, IllegalAccessException,
-          IllegalArgumentException, InvocationTargetException {
+  public static <E> E execute0(Object object, String method, Object[] parameterObjects, Class<?>[] parameterTypes, Class<? extends E> returnClass)
+          throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     return executeIfMethodExists0(object, method, parameterObjects, parameterTypes, returnClass);
   }
 
@@ -192,14 +179,13 @@ public final class Funcs<E> {
    * @param returnClass
    * @return
    */
-  public static <E> E executeIfMethodExists(Object object, String method, Object[] parameterObjects,
-                                            Class<?>[] parameterTypes, Class<? extends E> returnClass) {
+  public static <E> Optional<E> executeIfMethodExists(Object object, String method, Object[] parameterObjects, Class<?>[] parameterTypes, Class<? extends E> returnClass) {
     Object objectToReturn = null;
     if (isAnyNull(object, method)) {
-      return null;
+      return Optional.empty();
     }
     try {
-      Class<? extends Object> class1 = object.getClass();
+      Class<?> class1 = object.getClass();
       java.lang.reflect.Method method2 = class1.getMethod(method, parameterTypes);
       method2.setAccessible(true);
       objectToReturn = method2.invoke(object, parameterObjects);
@@ -207,20 +193,19 @@ public final class Funcs<E> {
       e.printStackTrace();
     }
     if (returnClass.isInstance(objectToReturn)) {
-      return returnClass.cast(objectToReturn);
+      return Optional.of(returnClass.cast(objectToReturn));
     }
-    return null;
+    return Optional.empty();
   }
 
-  public static <E> E executeIfMethodExists0(Object object, String method,
-                                             Object[] parameterObjects, Class<?>[] parameterTypes, Class<? extends E> returnClass)
+  public static <E> E executeIfMethodExists0(Object object, String method, Object[] parameterObjects, Class<?>[] parameterTypes, Class<? extends E> returnClass)
           throws NoSuchMethodException, SecurityException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException {
     Object objectToReturn = null;
     if (isAnyNull(object, method)) {
       return null;
     }
-    Class<? extends Object> class1 = object.getClass();
+    Class<?> class1 = object.getClass();
     java.lang.reflect.Method method2 = class1.getMethod(method, parameterTypes);
     method2.setAccessible(true);
     objectToReturn = method2.invoke(object, parameterObjects);
@@ -230,10 +215,7 @@ public final class Funcs<E> {
     if (null == objectToReturn) {
       return null;
     }
-    // System.out.println("checking objectToReturn " + objectToReturn);
-
     if (returnClass.isInstance(objectToReturn)) {
-      // System.out.println("Inside if objectToRe" + objectToReturn);
       return returnClass.cast(objectToReturn);
     }
     throw new IllegalArgumentException("Invalid Method!!!");

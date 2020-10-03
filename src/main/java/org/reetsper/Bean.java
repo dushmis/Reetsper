@@ -2,10 +2,12 @@ package org.reetsper;
 
 //marker interface
 
+import java.io.Serializable;
+
 /**
  * IMP STUFF
  */
-public interface Bean {
+public interface Bean extends Serializable {
   /**
    * @return json using {@link com.google.gson.Gson}
    */
